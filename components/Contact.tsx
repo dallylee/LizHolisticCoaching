@@ -9,6 +9,35 @@ export const Contact: React.FC = () => {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch('https://formspree.io/f/xkglnede', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: formData
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormState({ name: '', email: '', preference: '', message: '' });
+      } else {
+        setSubmitError('Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitError('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="free-chat" className="py-16 lg:py-20 bg-stone-50">
@@ -33,7 +62,12 @@ export const Contact: React.FC = () => {
             <button onClick={() => setIsSubmitted(false)} className="mt-6 text-sm font-medium text-sage-600 hover:text-sage-500 underline">Send another message</button>
           </div>
         ) : (
-          <form action="https://formspree.io/f/xkglnede" method="POST" className="space-y-6 bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-stone-100">
+          <form
+            onSubmit={handleSubmit}
+            action="https://formspree.io/f/xkglnede"
+            method="POST"
+            className="space-y-6 bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-stone-100"
+          >
             {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-stone-700 mb-1">Name *</label>
@@ -94,15 +128,23 @@ export const Contact: React.FC = () => {
               ></textarea>
             </div>
 
+            <input
+              type="hidden"
+              name="_subject"
+              value="New consultation request from Enes Holistic Coaching"
+            />
+
             {/* Submit Button */}
-            <Button type="submit" className="w-full text-base sm:text-lg font-semibold">
-              Request Free Consultation
+            <Button type="submit" className="w-full text-base sm:text-lg font-semibold" disabled={isSubmitting}>
+              {isSubmitting ? 'Sending...' : 'Request Free Consultation'}
             </Button>
 
             {/* Helper Text */}
             <p className="text-xs sm:text-sm text-stone-500 text-center">
               I personally read every message.
             </p>
+
+            {submitError && <p className="text-sm text-red-600 text-center">{submitError}</p>}
           </form>
         )}
       </div>
