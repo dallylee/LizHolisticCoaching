@@ -54,7 +54,10 @@ function App() {
     document.getElementById('free-chat')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  const isClientDashboard = pathname === clientLoginPath || pathname.endsWith('/client-login') || pathname.endsWith('client-login/');
+  const isClientDashboard =
+    pathname === clientLoginPath ||
+    pathname.endsWith('/client-login') ||
+    pathname.endsWith('client-login/');
 
   if (isClientDashboard) {
     return (
