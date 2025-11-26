@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustBadges } from './components/TrustBadges';
@@ -17,8 +17,23 @@ import { ClientLoginPage } from './components/ClientLoginPage';
 
 const getPathname = () => (typeof window !== 'undefined' ? window.location.pathname : '/');
 
+const getBaseRoot = () => {
+  if (typeof window === 'undefined') return '/';
+  const segments = window.location.pathname.split('/').filter(Boolean);
+  if (segments[segments.length - 1] === 'client-login') {
+    segments.pop();
+  }
+  if (segments.length === 0) {
+    return '/';
+  }
+  return `/${segments.join('/')}/`;
+};
+
 function App() {
   const [pathname, setPathname] = useState<string>(getPathname());
+  const baseRoot = useMemo(() => getBaseRoot(), []);
+  const clientLoginPath = `${baseRoot}client-login`;
+  const homePath = baseRoot;
 
   useEffect(() => {
     const handlePopState = () => setPathname(getPathname());
@@ -39,16 +54,24 @@ function App() {
     document.getElementById('free-chat')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  if (pathname === '/client-login') {
-    return <ClientLoginPage onNavigateHome={() => navigateTo('/')} onNavigateClientLogin={() => navigateTo('/client-login')} />;
+  const isClientDashboard = pathname === clientLoginPath || pathname.endsWith('/client-login') || pathname.endsWith('client-login/');
+
+  if (isClientDashboard) {
+    return (
+      <ClientLoginPage
+        onNavigateHome={() => navigateTo(homePath)}
+        onNavigateClientLogin={() => navigateTo(clientLoginPath)}
+      />
+    );
   }
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar
         onContactClick={scrollToContact}
-        onClientLoginNavigate={() => navigateTo('/client-login')}
-        onLogoClick={() => navigateTo('/')}
+        clientLoginHref={clientLoginPath}
+        onClientLoginNavigate={() => navigateTo(clientLoginPath)}
+        onLogoClick={() => navigateTo(homePath)}
       />
       <Hero onContactClick={scrollToContact} />
       <TrustBadges />

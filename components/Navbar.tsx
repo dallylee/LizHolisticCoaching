@@ -4,11 +4,12 @@ import logoImage from '../src/assets/enes-logo.png';
 
 interface NavbarProps {
   onContactClick: () => void;
+  clientLoginHref?: string;
   onClientLoginNavigate?: () => void;
   onLogoClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onContactClick, onClientLoginNavigate, onLogoClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onContactClick, clientLoginHref = '/client-login', onClientLoginNavigate, onLogoClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -41,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onContactClick, onClientLoginNav
             <a href="#is-this-4me" className="text-stone-600 hover:text-sage-700 transition-colors">Is This For Me?</a>
             <a href="#client-stories" className="text-stone-600 hover:text-sage-700 transition-colors">Client Stories</a>
             <a
-              href="/client-login"
+              href={clientLoginHref}
               onClick={(event) => {
                 if (onClientLoginNavigate) {
                   event.preventDefault();
@@ -80,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onContactClick, onClientLoginNav
             <a href="#is-this-4me" className="block px-3 py-2 text-stone-600 hover:text-sage-700 hover:bg-sage-50 rounded-md" onClick={() => setIsMobileMenuOpen(false)}>Is This For Me?</a>
             <a href="#client-stories" className="block px-3 py-2 text-stone-600 hover:text-sage-700 hover:bg-sage-50 rounded-md" onClick={() => setIsMobileMenuOpen(false)}>Client Stories</a>
             <a
-              href="/client-login"
+              href={clientLoginHref}
               className="block px-3 py-2 text-stone-600 hover:text-sage-700 hover:bg-sage-50 rounded-md"
               onClick={(event) => {
                 if (onClientLoginNavigate) {
